@@ -53,7 +53,7 @@ def remove_duplicates(values):
 
 def start(bot, update):
     """Send a message when the command /start is issued."""
-    update.message.reply_text('Hi!')
+    update.message.reply_text('Hi! Just type /games to get a List of supported games and choose one. After that, you can search for your favorite item!')
 
 
         # do something here
@@ -62,14 +62,12 @@ def start(bot, update):
 
 def help(bot, update):
     """Send a message when the command /help is issued."""
-    update.message.reply_text('Help!')
+    update.message.reply_text('Hi! Just type /games to get a List of supported games and choose one. After that, you can search for your favorite item!')
+
 def changegame(bot, update):
     global appid
     appid='730'
 
-def changegamedota(bot, update):
-    global appid
-    appid='570'
 
 def echo(bot, update):
     empfangen=update.message.text
@@ -93,17 +91,21 @@ def getItem( bot, update,name):
     my_list=list()
     for f in sales:
         name=f['market_name']
+        pic=f['img']
         my_list.append(name)
         x=x+1
     my_list=list(set(my_list))
     for g in my_list:
         keyboard = [[InlineKeyboardButton(g, callback_data=g)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text('Gefunden:', reply_markup=reply_markup)
+        update.message.reply_text('found', reply_markup=reply_markup)
+        bot.sendPhoto(chat_id=chat, photo=pic)
     y=0
+
 def error(bot, update, error):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, error)
+
 def button_callback(bot, update):
     # data is the callback_data where you declared in the buttons
     query = update.callback_query.data
@@ -155,6 +157,9 @@ def build_menu(buttons,
     return menu
 
 def games(bot, update):
+    global chat
+    chat=str(update.message.chat_id)
+    print(chat)
     gamesurl='https://api.opskins.com/ISales/GetSupportedSteamApps/v1?key='+opskinskey
     response = urllib2.urlopen(gamesurl)
     html = response.read();    
