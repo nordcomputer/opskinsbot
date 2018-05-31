@@ -1,7 +1,7 @@
 <h1>Opskins-Searching Telegram Bot</h1>
 Script to create a Telegram-Search-Bot for Opskins.com
 With the bot, you can search for different virtual items in different games and get their prices in USD and WAX (calculated with
-the value from coinmarketcap.com)
+the value from coinmarketcap.com)<br><br>
 
 
 
