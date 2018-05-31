@@ -14,6 +14,6 @@ Installation:
 - run the script
 
 Usage:
-send /games to get a list of supported games and choose one
-search for a item (just type the name of the item)
-use the buttons to get the current market price
+ - send <b>/games</b> to get a list of supported games and choose one
+ - search for a item (just type the name of the item)
+ - use the buttons to get the current market price
