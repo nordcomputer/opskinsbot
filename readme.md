@@ -3,7 +3,7 @@ Script to create a Telegram-Search-Bot for Opskins.com
 With the bot, you can search for different virtual items in different games and get their prices in USD and WAX (calculated with
 the value from coinmarketcap.com)
 
-<h2>Dependencies:</h2>
+<b>Dependencies:</b>
 - Python 3 and the different modules (install via pip)
 - OPSkinskey (How to get one: )
 - Your telegram bot with token (How to get one: )
