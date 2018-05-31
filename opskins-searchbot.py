@@ -85,17 +85,19 @@ def getItem( bot, update,name):
     print(chat)
     my_list=None
     my_list=list()
+    pic={}
     for f in sales:
         name=f['market_name']
-        pic=f['img']
+        pic.update({name:f['img']})
+        print(pic[name])
         my_list.append(name)
         x=x+1
     my_list=list(set(my_list))
     for g in my_list:
         keyboard = [[InlineKeyboardButton(g, callback_data=g)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        bot.sendPhoto(chat_id=chat, photo=pic)
-        update.message.reply_text('found', reply_markup=reply_markup)
+        update.message.reply_text('Found this:', reply_markup=reply_markup)
+        bot.sendPhoto(chat_id=chat, photo=pic[g])
     y=0
 
 def error(bot, update, error):
