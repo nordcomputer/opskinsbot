@@ -23,3 +23,6 @@ the value from coinmarketcap.com)<br><br>
  
  <b>Comment:</b>
  Still in Alpha-state and a very messy code - but I'm going to work on that the next days. But the WAX-Bounty-Program (for what this project was coded) ends in a short time, so I was in a little hurry ;). 
+ 
+<b>Latest updates:</b>
+- get mages from the found items.
