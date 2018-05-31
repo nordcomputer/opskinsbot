@@ -7,8 +7,8 @@ the value from coinmarketcap.com)<br><br>
 
 <b>Dependencies:</b>
 - Python 3 and the different modules (install via pip)
-- OPSkinskey (How to get one: )
-- Your telegram bot with token (How to get one: )
+- OPSkinskey (How to get one: You need an account at opskins.com - there you can generate your key at Account->Advanced Options)
+- Your telegram bot with token (How to get one: https://core.telegram.org/bots#6-botfather )
 
 <b>Installation:</b>
 - copy the script into the desired location
