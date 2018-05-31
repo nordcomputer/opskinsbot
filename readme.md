@@ -20,3 +20,6 @@ the value from coinmarketcap.com)<br><br>
  - send <b>/games</b> to get a list of supported games and choose one
  - search for a item (just type the name of the item)
  - use the buttons to get the current market price
+ 
+ <b>Comment:</b>
+ Still in Alpha-state and a very messy code - but I'm going to work on that the next days. But the WAX-Bounty-Program (for what this project was coded) ends in a short time, so I was in a little hurry ;). 
