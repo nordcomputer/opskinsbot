@@ -64,10 +64,6 @@ def help(bot, update):
     """Send a message when the command /help is issued."""
     update.message.reply_text('Hi! Just type /games to get a List of supported games and choose one. After that, you can search for your favorite item!')
 
-def changegame(bot, update):
-    global appid
-    appid='730'
-
 
 def echo(bot, update):
     empfangen=update.message.text
@@ -98,8 +94,8 @@ def getItem( bot, update,name):
     for g in my_list:
         keyboard = [[InlineKeyboardButton(g, callback_data=g)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text('found', reply_markup=reply_markup)
         bot.sendPhoto(chat_id=chat, photo=pic)
+        update.message.reply_text('found', reply_markup=reply_markup)
     y=0
 
 def error(bot, update, error):
@@ -141,6 +137,7 @@ def button_callback(bot, update):
         marketprice=int(marketprice)
         marketprice=marketprice/100;
         wax=marketprice/waxprice
+        wax=round(wax,2)
         wax=str(wax)
         bot.send_message(chat_id=chat, text=name+': \r\n Marketprice (USD): '+str(marketprice)+' USD \r\n ~'+wax+' WAX')
         return
