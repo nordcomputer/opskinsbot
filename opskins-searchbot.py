@@ -16,20 +16,12 @@ import logging
 global appid
 global supportedgames
 global contextid
-global waxprice
+global waxurl
 global opskinskey
 global bottoken
+waxurl='https://api.coinmarketcap.com/v2/ticker/2300/?convert=USD'
 bottoken="TOKEN-FROM-YOUR-TELEGRAM-BOT"
 opskinskey='YOUR-OPSKINS-KEY'
-waxurl='https://api.coinmarketcap.com/v1/ticker/WAX/'
-response = urllib2.urlopen(waxurl)
-html = response.read();
-parsed_json=json.loads(html)
-waxpricelist=parsed_json
-for f in waxpricelist:
-    waxprice=float(f['price_usd'])
-    print (waxprice)
-
 
 contextid='2'
 supportedgames=list()
@@ -43,6 +35,10 @@ logger = logging.getLogger(__name__)
 def remove_duplicates(values):
     output = []
     seen = set()
+    response = urllib2.urlopen(waxurl)
+    html = response.read();
+    parsed_json=json.loads(html)    
+    
     for value in values:
 
         if value not in seen:
@@ -56,7 +52,6 @@ def start(bot, update):
     update.message.reply_text('Hi! Just type /games to get a List of supported games and choose one. After that, you can search for your favorite item!')
 
 
-        # do something here
 
 
 
@@ -135,7 +130,11 @@ def button_callback(bot, update):
         
         parsed_json=json.loads(html)
         marketprice=parsed_json['response']['prices'][name]['market_price']
-        # marketprice=('123')
+
+        response = urllib2.urlopen(waxurl)
+        html = response.read();
+        parsed_json=json.loads(html)
+        waxprice=parsed_json['data']['quotes']['USD']['price']
         marketprice=int(marketprice)
         marketprice=marketprice/100;
         wax=marketprice/waxprice
@@ -175,6 +174,10 @@ def games(bot, update):
     buttons7=list()
     buttons8=list()
     buttons9=list()
+    buttons10=list()
+    buttons11=list()
+    buttons12=list()
+    buttons13=list()
     for f in gameslistjson:
         name=f['name']
         app=f['appid']
@@ -184,6 +187,8 @@ def games(bot, update):
         supportedgames.append(app)
         supportedgames=list(set(supportedgames))
         button=InlineKeyboardButton(name, callback_data=app)
+        
+        
         if b <= 3:
             buttons1.append(button)
         elif b <=6:
@@ -200,8 +205,16 @@ def games(bot, update):
             buttons7.append(button)
         elif b <=24:
             buttons8.append(button)
-        else:
+        elif b <=27:
             buttons9.append(button)
+        elif b <=30:
+            buttons10.append(button)
+        elif b <=33:
+            buttons11.append(button)
+        elif b <=36:
+            buttons12.append(button)
+        else:
+            buttons13.append(button)
         b=b+1
 
     reply_markup = InlineKeyboardMarkup([buttons1,buttons2,buttons3,buttons4,buttons5,buttons6,buttons7,buttons8,buttons9],resize_keyboard=False)
@@ -236,4 +249,3 @@ def main():
 if __name__ == '__main__':
 
     main()
-
