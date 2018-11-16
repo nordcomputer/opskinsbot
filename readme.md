@@ -1,6 +1,6 @@
 <h1>Opskins-Searching Telegram Bot</h1>
 Script to create a Telegram-Search-Bot for Opskins.com
-With the bot, you can search for different virtual items in different games and get their prices in USD and WAX (calculated with
+With the bot, you can search for different virtual items in different games including images from the items and get their prices in USD and WAX (calculated with
 the value from coinmarketcap.com)<br><br>
 
 
@@ -25,4 +25,4 @@ the value from coinmarketcap.com)<br><br>
  Still in Alpha-state and a very messy code - but I'm going to work on that the next days. But the WAX-Bounty-Program (for what this project was coded) ends in a short time, so I was in a little hurry ;). 
  
 <b>Latest updates:</b>
-- get images from the found items.
+- integrated the coinmarketcap api v2.
