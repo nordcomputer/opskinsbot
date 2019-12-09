@@ -37,8 +37,8 @@ def remove_duplicates(values):
     seen = set()
     response = urllib2.urlopen(waxurl)
     html = response.read();
-    parsed_json=json.loads(html)    
-    
+    parsed_json=json.loads(html)
+
     for value in values:
 
         if value not in seen:
@@ -55,36 +55,43 @@ def start(bot, update):
 
 
 
-def help(bot, update):
+def help(update, context):
     """Send a message when the command /help is issued."""
     update.message.reply_text('Hi! Just type /games to get a List of supported games and choose one. After that, you can search for your favorite item!')
 
-
-def echo(bot, update):
+def echo(update,context):
     empfangen=update.message.text
+    # getItem(update, empfangen)
+    # print(empfangen)
+    getItem(update,empfangen)
 
-    getItem(bot, update, empfangen)
 
-def getItem( bot, update,name):
-    empfangen=urllib2.quote(name)
+
+def getItem(update, context):
+    empfangen=context
+    #print(empfangen)
+    appid='730'
+    # contents = 'https://api.opskins.com/ISales/Search/v2/?app='+appid+'&search_item='+empfangen+'&key='+opskinskey
     contents = 'https://api.opskins.com/ISales/Search/v2/?app='+appid+'_'+contextid+'&search_item='+empfangen+'&key='+opskinskey
+
     #update.message.reply_text(contents)
     response = urllib2.urlopen(contents)
     html = response.read()
+    # print(contents)
     response.close() # best practice to close the file'
     parsed_json = json.loads(html)
     sales=parsed_json['response']['sales']
     x=0
     global chat
     chat=str(update.message.chat_id)
-    print(chat)
+    #print(chat)
     my_list=None
     my_list=list()
     pic={}
     for f in sales:
         name=f['market_name']
         pic.update({name:f['img']})
-        print(pic[name])
+        #print(pic[name])
         my_list.append(name)
         x=x+1
     my_list=list(set(my_list))
@@ -92,56 +99,38 @@ def getItem( bot, update,name):
         keyboard = [[InlineKeyboardButton(g, callback_data=g)]]
         reply_markup = InlineKeyboardMarkup(keyboard)
         update.message.reply_text('Found this:', reply_markup=reply_markup)
-        bot.sendPhoto(chat_id=chat, photo=pic[g])
+        # bot.sendPhoto(chat_id=chat, photo=pic[g])
+        # bot.send_photo(pic[g])
+        #update.send_photo(chat_id=chat, photo='https://telegram.org/img/t_logo.png')
     y=0
 
-def error(bot, update, error):
+def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, error)
 
-def button_callback(bot, update):
+def button_callback(update,context):
     # data is the callback_data where you declared in the buttons
-    query = update.callback_query.data
-    name=query
+    query = update.callback_query
+    name=query.data
     item=name
-    tname=update.callback_query.message
-    print(item)
+    #tname=update.callback_query.message
+
     if item in supportedgames:
         global appid
         appid=str(item)
         gamesurl='https://api.opskins.com/ISales/GetSupportedSteamApps/v1?key='+opskinskey
         response = urllib2.urlopen(gamesurl)
-        html = response.read();    
-        parsed_json=json.loads(html)
-        gameslistjson=parsed_json['response']['apps']
-        for f in gameslistjson:
-            if f['appid']==item:
-                print(f['contextid'])
-                global contextid
-                contextid=str(f['contextid'])
-        bot.send_message(chat_id=chat, text="done")
-    else:
-        query = update.callback_query.data
-        
-        name=query
-        priceurl='https://api.opskins.com/IPricing/GetSuggestedPrices/v1/?appid='+appid+'&items[]='+query+'&key='+opskinskey    
-        response2 = urllib2.urlopen(priceurl)
-        html = response2.read();
-        
-        parsed_json=json.loads(html)
-        marketprice=parsed_json['response']['prices'][name]['market_price']
-
-        response = urllib2.urlopen(waxurl)
         html = response.read();
         parsed_json=json.loads(html)
-        waxprice=parsed_json['data']['quotes']['USD']['price']
-        marketprice=int(marketprice)
-        marketprice=marketprice/100;
-        wax=marketprice/waxprice
-        wax=round(wax,2)
-        wax=str(wax)
-        bot.send_message(chat_id=chat, text=name+': \r\n Marketprice (USD): '+str(marketprice)+' USD \r\n ~'+wax+' WAX')
-        return
+        gameslistjson=parsed_json['response']['apps']
+        # print(item)
+        for f in gameslistjson:
+            if f['appid']==item:
+
+                global contextid
+                contextid=str(f['contextid'])
+        # update.message.reply_text('OK')
+    return
 
 def build_menu(buttons,
                n_cols,
@@ -154,75 +143,54 @@ def build_menu(buttons,
         menu.append(footer_buttons)
     return menu
 
-def games(bot, update):
+def games(update, context):
     global chat
     chat=str(update.message.chat_id)
-    print(chat)
+    # chat=str('test')
+    # print(chat)
     gamesurl='https://api.opskins.com/ISales/GetSupportedSteamApps/v1?key='+opskinskey
     response = urllib2.urlopen(gamesurl)
-    html = response.read();    
+    html = response.read();
     parsed_json=json.loads(html)
     gameslistjson=parsed_json['response']['apps']
     buttons=list()
-    b=1
-    buttons1=list()
-    buttons2=list()
-    buttons3=list()
-    buttons4=list()
-    buttons5=list()
-    buttons6=list()
-    buttons7=list()
-    buttons8=list()
-    buttons9=list()
-    buttons10=list()
-    buttons11=list()
-    buttons12=list()
-    buttons13=list()
+    line=list()
+    foo=0
+    bar=0
+    linie=list()
     for f in gameslistjson:
         name=f['name']
         app=f['appid']
-       
         app=str(app)
         global supportedgames
         supportedgames.append(app)
         supportedgames=list(set(supportedgames))
         button=InlineKeyboardButton(name, callback_data=app)
-        
-        
-        if b <= 3:
-            buttons1.append(button)
-        elif b <=6:
-            buttons2.append(button)
-        elif b <=9:
-            buttons3.append(button)
-        elif b <=12:
-            buttons4.append(button)
-        elif b <=15:
-            buttons5.append(button)
-        elif b <=18:
-            buttons6.append(button)
-        elif b <=21:
-            buttons7.append(button)
-        elif b <=24:
-            buttons8.append(button)
-        elif b <=27:
-            buttons9.append(button)
-        elif b <=30:
-            buttons10.append(button)
-        elif b <=33:
-            buttons11.append(button)
-        elif b <=36:
-            buttons12.append(button)
-        else:
-            buttons13.append(button)
-        b=b+1
 
-    reply_markup = InlineKeyboardMarkup([buttons1,buttons2,buttons3,buttons4,buttons5,buttons6,buttons7,buttons8,buttons9],resize_keyboard=False)
+        if foo<=1:
+            linie.append(button)
+            foo=foo+1
+        else:
+            linie=[]
+            foo=0
+            linie.append(button)
+            line.append(linie)
+
+
+
+
+
+
+
+    reply_markup = InlineKeyboardMarkup(line,resize_keyboard=False)
     update.message.reply_text('Choose game:', reply_markup=reply_markup)
+
+
+
 def main():
     """Start the bot."""
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater(bottoken)
+    updater = Updater(bottoken, use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
