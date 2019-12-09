@@ -10,6 +10,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, ConversationHandler, InlineQueryHandler)
 
 import urllib.request as urllib2
+import urllib.parse as urllib3
 import json
 import requests
 import logging
@@ -19,13 +20,13 @@ global contextid
 global waxurl
 global opskinskey
 global bottoken
+from credentials import (bottoken,opskinskey)
 waxurl='https://api.coinmarketcap.com/v2/ticker/2300/?convert=USD'
-bottoken="TOKEN-FROM-YOUR-TELEGRAM-BOT"
-opskinskey='YOUR-OPSKINS-KEY'
 
-contextid='2'
+
+contextid='1'
 supportedgames=list()
-appid='227300'
+appid='1000000'
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -37,8 +38,8 @@ def remove_duplicates(values):
     seen = set()
     response = urllib2.urlopen(waxurl)
     html = response.read();
-    parsed_json=json.loads(html)    
-    
+    parsed_json=json.loads(html)
+
     for value in values:
 
         if value not in seen:
@@ -52,86 +53,103 @@ def start(bot, update):
     update.message.reply_text('Hi! Just type /games to get a List of supported games and choose one. After that, you can search for your favorite item!')
 
 
+def test(update,context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="jup")
+    context.bot.send_photo(chat_id=update.effective_chat.id, photo='https://telegram.org/img/t_logo.png')
 
-
-
-def help(bot, update):
+def help(update, context):
     """Send a message when the command /help is issued."""
     update.message.reply_text('Hi! Just type /games to get a List of supported games and choose one. After that, you can search for your favorite item!')
 
-
-def echo(bot, update):
+def echo(update,context):
     empfangen=update.message.text
+    # getItem(update, empfangen)
+    # print(empfangen)
+    getItem(update,context)
 
-    getItem(bot, update, empfangen)
 
-def getItem( bot, update,name):
-    empfangen=urllib2.quote(name)
+
+def getItem(update, context):
+    #context.bot.send_photo(chat_id=update.effective_chat.id, photo='https://telegram.org/img/t_logo.png')
+    empfangen=update.message.text
+    print(empfangen)
+    empfangen=urllib3.quote(empfangen)
+    print('appid:'+appid)
+    # appid='1000000'
     contents = 'https://api.opskins.com/ISales/Search/v2/?app='+appid+'_'+contextid+'&search_item='+empfangen+'&key='+opskinskey
-    #update.message.reply_text(contents)
+
+    # contents=urllib2.urlencode(contents)
+    print(contents)
+
     response = urllib2.urlopen(contents)
     html = response.read()
     response.close() # best practice to close the file'
     parsed_json = json.loads(html)
     sales=parsed_json['response']['sales']
     x=0
-    global chat
-    chat=str(update.message.chat_id)
-    print(chat)
     my_list=None
     my_list=list()
     pic={}
-    for f in sales:
-        name=f['market_name']
-        pic.update({name:f['img']})
-        print(pic[name])
-        my_list.append(name)
-        x=x+1
-    my_list=list(set(my_list))
-    for g in my_list:
-        keyboard = [[InlineKeyboardButton(g, callback_data=g)]]
-        reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text('Found this:', reply_markup=reply_markup)
-        bot.sendPhoto(chat_id=chat, photo=pic[g])
-    y=0
+    if len(sales) > 0:
+        for f in sales:
+            name=f['market_name']
+            pic.update({name:f['img']})
+            # print(pic[name])
+            my_list.append(name)
+            x=x+1
+        my_list=list(set(my_list))
+        for g in my_list:
+            keyboard = [[InlineKeyboardButton(g, callback_data=g)]]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            update.message.reply_text('Found this:', reply_markup=reply_markup)
+            context.bot.send_photo(chat_id=update.effective_chat.id, photo=pic[g])
+    else:
+        update.message.reply_text('no results found')
 
-def error(bot, update, error):
+
+def error(update, context):
     """Log Errors caused by Updates."""
     logger.warning('Update "%s" caused error "%s"', update, error)
 
-def button_callback(bot, update):
+def button_callback(update,context):
     # data is the callback_data where you declared in the buttons
-    query = update.callback_query.data
-    name=query
+    query = update.callback_query
+    name=query.data
     item=name
-    tname=update.callback_query.message
-    print(item)
+    #tname=update.callback_query.message
+    context.bot.send_message(chat_id=update.effective_chat.id, text="ok")
     if item in supportedgames:
         global appid
         appid=str(item)
         gamesurl='https://api.opskins.com/ISales/GetSupportedSteamApps/v1?key='+opskinskey
         response = urllib2.urlopen(gamesurl)
-        html = response.read();    
+        html = response.read();
         parsed_json=json.loads(html)
         gameslistjson=parsed_json['response']['apps']
+        # print(item)
         for f in gameslistjson:
             if f['appid']==item:
-                print(f['contextid'])
+
                 global contextid
                 contextid=str(f['contextid'])
-        bot.send_message(chat_id=chat, text="done")
+        return
     else:
         query = update.callback_query.data
-        
         name=query
-        priceurl='https://api.opskins.com/IPricing/GetSuggestedPrices/v1/?appid='+appid+'&items[]='+query+'&key='+opskinskey    
+        query=urllib3.quote(query)
+        priceurl='https://api.opskins.com/IPricing/GetSuggestedPrices/v1/?appid='+appid+'&items[]='+query+'&key='+opskinskey
+        print(priceurl)
         response2 = urllib2.urlopen(priceurl)
         html = response2.read();
-        
-        parsed_json=json.loads(html)
-        marketprice=parsed_json['response']['prices'][name]['market_price']
 
+        parsed_json=json.loads(html)
+
+        marketprice=parsed_json['response']['prices'][name]['opskins_lowest_price']
+        if marketprice==None:
+            marketprice='0'
+        print(marketprice)
         response = urllib2.urlopen(waxurl)
+        print(waxurl)
         html = response.read();
         parsed_json=json.loads(html)
         waxprice=parsed_json['data']['quotes']['USD']['price']
@@ -140,8 +158,13 @@ def button_callback(bot, update):
         wax=marketprice/waxprice
         wax=round(wax,2)
         wax=str(wax)
-        bot.send_message(chat_id=chat, text=name+': \r\n Marketprice (USD): '+str(marketprice)+' USD \r\n ~'+wax+' WAX')
+        print(waxprice)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=name+': \r\nLowest Price on Opskins (USD): '+str(marketprice)+' USD\r\n ~'+wax+' WAX')
+
         return
+
+
+
 
 def build_menu(buttons,
                n_cols,
@@ -154,75 +177,55 @@ def build_menu(buttons,
         menu.append(footer_buttons)
     return menu
 
-def games(bot, update):
+def games(update, context):
     global chat
     chat=str(update.message.chat_id)
-    print(chat)
+    # chat=str('test')
+    # print(chat)
     gamesurl='https://api.opskins.com/ISales/GetSupportedSteamApps/v1?key='+opskinskey
+    print(gamesurl)
     response = urllib2.urlopen(gamesurl)
-    html = response.read();    
+    html = response.read();
     parsed_json=json.loads(html)
     gameslistjson=parsed_json['response']['apps']
     buttons=list()
-    b=1
-    buttons1=list()
-    buttons2=list()
-    buttons3=list()
-    buttons4=list()
-    buttons5=list()
-    buttons6=list()
-    buttons7=list()
-    buttons8=list()
-    buttons9=list()
-    buttons10=list()
-    buttons11=list()
-    buttons12=list()
-    buttons13=list()
+    line=list()
+    foo=0
+    bar=0
+    linie=list()
     for f in gameslistjson:
         name=f['name']
         app=f['appid']
-       
         app=str(app)
         global supportedgames
         supportedgames.append(app)
         supportedgames=list(set(supportedgames))
         button=InlineKeyboardButton(name, callback_data=app)
-        
-        
-        if b <= 3:
-            buttons1.append(button)
-        elif b <=6:
-            buttons2.append(button)
-        elif b <=9:
-            buttons3.append(button)
-        elif b <=12:
-            buttons4.append(button)
-        elif b <=15:
-            buttons5.append(button)
-        elif b <=18:
-            buttons6.append(button)
-        elif b <=21:
-            buttons7.append(button)
-        elif b <=24:
-            buttons8.append(button)
-        elif b <=27:
-            buttons9.append(button)
-        elif b <=30:
-            buttons10.append(button)
-        elif b <=33:
-            buttons11.append(button)
-        elif b <=36:
-            buttons12.append(button)
-        else:
-            buttons13.append(button)
-        b=b+1
 
-    reply_markup = InlineKeyboardMarkup([buttons1,buttons2,buttons3,buttons4,buttons5,buttons6,buttons7,buttons8,buttons9],resize_keyboard=False)
+        if foo<=1:
+            linie.append(button)
+            foo=foo+1
+        else:
+            linie=[]
+            foo=0
+            linie.append(button)
+            line.append(linie)
+
+
+
+
+
+
+
+    reply_markup = InlineKeyboardMarkup(line,resize_keyboard=False)
     update.message.reply_text('Choose game:', reply_markup=reply_markup)
+
+
+
 def main():
     """Start the bot."""
     # Create the EventHandler and pass it your bot's token.
-    updater = Updater(bottoken)
+    updater = Updater(bottoken, use_context=True)
 
     # Get the dispatcher to register handlers
     dp = updater.dispatcher
@@ -231,6 +234,7 @@ def main():
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("help", help))
     dp.add_handler(CommandHandler("games", games))
+    dp.add_handler(CommandHandler("test", test))
     # on noncommand i.e message - echo the message on Telegram
     dp.add_handler(MessageHandler(Filters.text, echo))
     dp.add_handler(CallbackQueryHandler(button_callback))
