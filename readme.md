@@ -13,6 +13,8 @@ the value from coinmarketcap.com)<br><br>
 <b>Installation:</b>
 - copy the script into the desired location
 - open the script and insert your OPSkinskey and your Telegram-Bot-Token
+- Rename or copy sample-credentials.py to credentials.py and add your token/key
+- Your credentials for opskins and your telegram bot
 - make sure, your dependencies are installed
 - run the script
 
@@ -20,9 +22,12 @@ the value from coinmarketcap.com)<br><br>
  - send <b>/games</b> to get a list of supported games and choose one
  - search for a item (just type the name of the item)
  - use the buttons to get the current market price
- 
+
  <b>Comment:</b>
- Still in Alpha-state and a very messy code - but I'm going to work on that the next days. But the WAX-Bounty-Program (for what this project was coded) ends in a short time, so I was in a little hurry ;). 
- 
+ Still in Alpha-state and a very messy code - but I'm going to work on that the next days. But the WAX-Bounty-Program (for what this project was coded) ends in a short time, so I was in a little hurry ;).
+
 <b>Latest updates:</b>
-- integrated the coinmarketcap api v2.
+- changed the authorization method
+- integrated an individual file for authorization
+- gamelist is now generated in a better way
+- pictures!
