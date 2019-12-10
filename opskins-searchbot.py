@@ -71,7 +71,6 @@ def getItem(update, context):
     response.close() # best practice to close the file'
     parsed_json = json.loads(html)
     sales=parsed_json['response']['sales']
-    x=0
     my_list=None
     my_list=list()
     pic={}
@@ -80,7 +79,6 @@ def getItem(update, context):
             name=f['market_name']
             pic.update({name:f['img']})
             my_list.append(name)
-            x=x+1
         my_list=list(set(my_list))
         for g in my_list:
             keyboard = [[InlineKeyboardButton(g, callback_data=g)]]
