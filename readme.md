@@ -6,21 +6,22 @@ the value from coinmarketcap.com)<br><br>
 
 
 <b>Dependencies:</b>
-- Python 3 and the different modules (install via pip)
-- OPSkinskey (How to get one: You need an account at opskins.com - there you can generate your key at Account->Advanced Options)
-- Your telegram bot with token (How to get one: https://core.telegram.org/bots#6-botfather )
+ - Python 3 and the different modules (install via pip: ```pip install python-telegram-bot```)
+ - OPSkinskey (How to get one: You need an account at opskins.com - there you can generate your key at Account->Advanced Options)
+ - Your telegram bot with token (How to get one: https://core.telegram.org/bots#6-botfather )
 
 <b>Installation:</b>
-- copy the script into the desired location
-- open the script and insert your OPSkinskey and your Telegram-Bot-Token
-- Rename or copy sample-credentials.py to credentials.py and add your token/key
-- Your credentials for opskins and your telegram bot
-- make sure, your dependencies are installed
-- run the script
+ - copy the script into the desired location
+ - Rename or copy sample-credentials.py to credentials.py and add your OPSkinskey and your Telegram-Bot-Token
+ - make sure, your dependencies are installed
+
+<b>Start the script (depending on your python installation):</b>
+ - ```python opskins-searchbot.py``` or ```python3 opskins-searchbot.py```
+
 
 <b>Usage:</b>
  - send <b>/games</b> to get a list of supported games and choose one
- - search for a item (just type the name of the item)
+ - search for an item (just type the name of the item)
  - use the buttons to get the current market price
 
  <b>Comment:</b>
