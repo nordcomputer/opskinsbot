@@ -13,6 +13,7 @@ import urllib.parse as urllib3
 import json
 import requests
 import logging
+import base64
 global appid
 global supportedgames
 global contextid
@@ -65,10 +66,8 @@ def getItem(update, context):
     empfangen=update.message.text
     empfangen=urllib3.quote(empfangen)
     global contextid
-    contents = 'https://api.opskins.com/ISales/Search/v2/?app='+appid+'_'+contextid+'&search_item='+empfangen+'&key='+opskinskey
-    response = urllib2.urlopen(contents)
-    html = response.read()
-    response.close() # best practice to close the file'
+    searchurl = 'https://api.opskins.com/ISales/Search/v2/?app='+appid+'_'+contextid+'&search_item='+empfangen
+    html = getfromurl(searchurl)
     parsed_json = json.loads(html)
     sales=parsed_json['response']['sales']
     my_list=None
@@ -102,10 +101,8 @@ def button_callback(update,context):
         if item in supportedgames:
             global appid
             appid=str(item)
-            gamesurl='https://api.opskins.com/ISales/GetSupportedSteamApps/v1?key='+opskinskey
-            response = urllib2.urlopen(gamesurl)
-            html = response.read();
-            response.close()
+            gamesurl='https://api.opskins.com/ISales/GetSupportedSteamApps/v1'
+            html=getfromurl(gamesurl)
             parsed_json=json.loads(html)
             gameslistjson=parsed_json['response']['apps']
             for f in gameslistjson:
@@ -116,16 +113,13 @@ def button_callback(update,context):
                     context.bot.send_message(chat_id=update.effective_chat.id,
                     text='ok - game is set to <b>'+gamename+'</b>\r\nYou can now search for items by typing your search phrase',
                     parse_mode=ParseMode.HTML)
-
             return
         else:
             query = update.callback_query.data
             name=query
             query=urllib3.quote(query)
-            priceurl='https://api.opskins.com/IPricing/GetSuggestedPrices/v1/?appid='+appid+'&items[]='+query+'&key='+opskinskey
-            response2 = urllib2.urlopen(priceurl)
-            html = response2.read();
-            response2.close()
+            priceurl='https://api.opskins.com/IPricing/GetSuggestedPrices/v1/?appid='+appid+'&items[]='+query
+            html=getfromurl(priceurl)
             parsed_json=json.loads(html)
             marketprice=parsed_json['response']['prices'][name]['opskins_lowest_price']
             if marketprice==None:
@@ -163,10 +157,8 @@ def build_menu(buttons,
 def games(update, context):
     global chat
     chat=str(update.message.chat_id)
-    gamesurl='https://api.opskins.com/ISales/GetSupportedSteamApps/v1?key='+opskinskey
-    response = urllib2.urlopen(gamesurl)
-    html = response.read();
-    response.close()
+    gamesurl='https://api.opskins.com/ISales/GetSupportedSteamApps/v1'
+    html=getfromurl(gamesurl)
     parsed_json=json.loads(html)
     gameslistjson=parsed_json['response']['apps']
     buttons=list()
@@ -194,6 +186,15 @@ def games(update, context):
     update.message.reply_text('Choose game:', reply_markup=reply_markup)
 
 
+def getfromurl(url):
+    data = opskinskey+":"
+    encodedBytes = base64.b64encode(data.encode("utf-8"))
+    myToken = str(encodedBytes, "utf-8")
+    request = urllib2.Request(url)
+    request.add_header("Authorization", "Basic %s" % myToken)
+    html = urllib2.urlopen(request).read()
+    urllib2.urlopen(request).close()
+    return html
 
 def main():
     """Start the bot."""
