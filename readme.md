@@ -11,6 +11,7 @@ the value from coinmarketcap.com)<br><br>
  - Your telegram bot with token (How to get one: https://core.telegram.org/bots#6-botfather )
  - Coinmarketcap API-Key (How to get one: https://coinmarketcap.com/api/)
  - Coinmarketcap Sandbox-API-Key (How to get one: https://sandbox.coinmarketcap.com/)
+ 
 <b>Installation:</b>
  - copy the script into the desired location
  - Rename or copy sample-credentials.py to credentials.py and add your OPSkinskey, coinmarketcap-api/coinmarketcap-sandbox-api and your Telegram-Bot-Token
