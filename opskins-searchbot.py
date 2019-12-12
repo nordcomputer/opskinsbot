@@ -50,7 +50,6 @@ def remove_duplicates(values):
 
 def start(update,context):
     """Send a message when the command /start is issued."""
-    getcmcprice()
     context.bot.send_message(chat_id=update.effective_chat.id, text='Hi! Just type /games to get a List of supported games and choose one. After that, you can search for your favorite item!')
 
 def help(update, context):
@@ -126,7 +125,7 @@ def button_callback(update,context):
             parsed_json=json.loads(html)
             marketprice=parsed_json['response']['prices'][name]['opskins_lowest_price']
             if marketprice==None:
-                marketprice='0'            
+                marketprice='0'
             waxprice=getcmcprice()
             marketprice=int(marketprice)
             marketprice=marketprice/100;
