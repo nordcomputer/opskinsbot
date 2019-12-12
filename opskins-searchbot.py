@@ -21,7 +21,9 @@ global gamename
 global waxurl
 global opskinskey
 global bottoken
-from credentials import (bottoken,opskinskey)
+from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
+from requests import Request, Session
+from credentials import (bottoken,opskinskey,cmcapikey,cmcsandboxkey,activatecmcsandbox)
 waxurl='https://api.coinmarketcap.com/v2/ticker/2300/?convert=USD'
 contextid=''
 supportedgames=list()
@@ -48,6 +50,7 @@ def remove_duplicates(values):
 
 def start(update,context):
     """Send a message when the command /start is issued."""
+    getcmcprice()
     context.bot.send_message(chat_id=update.effective_chat.id, text='Hi! Just type /games to get a List of supported games and choose one. After that, you can search for your favorite item!')
 
 def help(update, context):
@@ -123,12 +126,8 @@ def button_callback(update,context):
             parsed_json=json.loads(html)
             marketprice=parsed_json['response']['prices'][name]['opskins_lowest_price']
             if marketprice==None:
-                marketprice='0'
-            response = urllib2.urlopen(waxurl)
-            html = response.read();
-            response.close()
-            parsed_json=json.loads(html)
-            waxprice=parsed_json['data']['quotes']['USD']['price']
+                marketprice='0'            
+            waxprice=getcmcprice()
             marketprice=int(marketprice)
             marketprice=marketprice/100;
             wax=marketprice/waxprice
@@ -195,6 +194,35 @@ def getfromurl(url):
     html = urllib2.urlopen(request).read()
     urllib2.urlopen(request).close()
     return html
+
+
+def getcmcprice():
+    if activatecmcsandbox==True:
+        url = 'https://sandbox-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+        ckey = cmcsandboxkey
+    else:
+        url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
+        ckey = cmcapikey
+
+    parameters = {
+      'id':'2300'
+    }
+    headers = {
+      'Accepts': 'application/json',
+      'X-CMC_PRO_API_KEY': ckey,
+    }
+
+    session = Session()
+    session.headers.update(headers)
+
+    try:
+      response = session.get(url, params=parameters)
+      data = json.loads(response.text)
+      parsed_json=json.loads(response.text)
+      marketprice=parsed_json['data']['2300']['quote']['USD']['price']
+      return marketprice
+    except (ConnectionError, Timeout, TooManyRedirects) as e:
+      print(e)
 
 def main():
     """Start the bot."""
